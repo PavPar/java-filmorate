@@ -21,7 +21,6 @@ public class FilmDbStorage implements FilmStorage {
         this.filmRepository = filmRepository;
     }
 
-
     @Override
     public Film addFilm(Film film) {
         Optional<Film> addedFilm = filmRepository.addFilm(film);
@@ -49,5 +48,9 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getTopN(int count) {
         return filmRepository.getTopN(count);
+    }
+
+    public List<Film> findCommonFilms(long userId, long friendId) {
+        return filmRepository.findCommonFilms(userId, friendId);
     }
 }

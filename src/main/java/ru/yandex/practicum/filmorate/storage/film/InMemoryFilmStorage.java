@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Qualifier("InMemoryFilmStorage")
@@ -29,9 +30,8 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public Optional<Film> getFilm(long id) {
-        return Optional.of(films.get(id));
+        return Optional.ofNullable(films.get(id));
     }
-
 
     @Override
     public Film updateFilm(Film film) {
@@ -39,10 +39,7 @@ public class InMemoryFilmStorage implements FilmStorage {
             log.error("Фильм не найден");
             throw new NotFoundException("Фильм не найден");
         }
-
-        Film currentFilmValue = films.get(film.getId());
-        films.put(currentFilmValue.getId(), film);
-
+        films.put(film.getId(), film);
         return films.get(film.getId());
     }
 
@@ -84,9 +81,17 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getTopN(int count) {
-        Collection<Film> films = getFilms();
-        return films.stream()
+        return films.values().stream()
                 .sorted((a, b) -> b.getLikes().size() - a.getLikes().size())
-                .toList().subList(0, Math.min(films.size(), count));
+                .limit(count)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Film> findCommonFilms(long userId, long friendId) {
+        return films.values().stream()
+                .filter(f -> f.getLikes().contains(userId) && f.getLikes().contains(friendId))
+                .sorted((a, b) -> b.getLikes().size() - a.getLikes().size())
+                .collect(Collectors.toList());
     }
 }

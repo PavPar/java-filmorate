@@ -16,7 +16,6 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 @Service
 public class FilmService {
     private final FilmStorage filmStorage;
@@ -26,11 +25,7 @@ public class FilmService {
     private final FilmLikeStorage filmLikeStorage;
 
     @Autowired
-    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage,
-                       @Qualifier("userDbStorage") UserStorage userStorage,
-                       GenreStorage genreStorage, MpaStorage mpaStorage,
-                       FilmLikeStorage filmLikeStorage
-    ) {
+    public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage") UserStorage userStorage, GenreStorage genreStorage, MpaStorage mpaStorage, FilmLikeStorage filmLikeStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.genreStorage = genreStorage;
@@ -79,28 +74,34 @@ public class FilmService {
         film.setGenres(genreStorage.getFilmGenre(film.getId()));
         film.setMpa(mpaStorage.getById(film.getMpa().getId()));
         film.setLikes(filmLikeStorage.getFilmLikes(film.getId()));
-
         return film;
     }
 
     public Film addFilm(@Valid Film film) {
         mpaStorage.getById(film.getMpa().getId());
         Film addedFilm = filmStorage.addFilm(film);
-
         if (!Objects.isNull(film.getGenres())) {
             Set<Long> genreIdList = film.getGenres().stream().map(Genre::getId).collect(Collectors.toSet());
             for (long id : genreIdList) {
                 genreStorage.getById(id);
             }
-
             for (long id : genreIdList) {
                 genreStorage.addFilmGenre(addedFilm.getId(), id);
             }
-
             addedFilm.setGenres(genreStorage.getFilmGenre(addedFilm.getId()));
         }
-
-
         return addedFilm;
+    }
+
+    public Collection<Film> getCommonFilms(long userId, long friendId) {
+        userStorage.getUser(userId);
+        userStorage.getUser(friendId);
+        List<Film> commonFilms = filmStorage.findCommonFilms(userId, friendId);
+        for (Film film : commonFilms) {
+            film.setGenres(genreStorage.getFilmGenre(film.getId()));
+            film.setMpa(mpaStorage.getById(film.getMpa().getId()));
+            film.setLikes(filmLikeStorage.getFilmLikes(film.getId()));
+        }
+        return commonFilms;
     }
 }

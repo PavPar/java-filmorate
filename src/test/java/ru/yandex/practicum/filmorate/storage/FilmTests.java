@@ -240,5 +240,55 @@ public class FilmTests {
         assertTrue(filmGenre.stream().filter(g -> g.getId() == 2).findFirst().get().getId() == 2);
     }
 
+    @Test
+    void getCommonFilms() {
+        Film film1 = Film.builder()
+                .name("film-1")
+                .description("desc")
+                .releaseDate(LocalDate.of(2000, 1, 1))
+                .duration(120)
+                .mpa(Mpa.builder().id(1).build())
+                .build();
 
+        Film film2 = Film.builder()
+                .name("film-2")
+                .description("desc")
+                .releaseDate(LocalDate.of(2001, 1, 1))
+                .duration(120)
+                .mpa(Mpa.builder().id(1).build())
+                .build();
+
+        User user1 = User.builder()
+                .email("user1@mail.com")
+                .login("user1")
+                .name("User1")
+                .birthday(LocalDate.of(1990, 1, 1))
+                .build();
+
+        User user2 = User.builder()
+                .email("user2@mail.com")
+                .login("user2")
+                .name("User2")
+                .birthday(LocalDate.of(1991, 1, 1))
+                .build();
+
+        User savedUser1 = userDbStorage.addUser(user1);
+        User savedUser2 = userDbStorage.addUser(user2);
+
+        Film savedFilm1 = filmDbStorage.addFilm(film1);
+        Film savedFilm2 = filmDbStorage.addFilm(film2);
+
+        filmLikeStorage.likeFilm(savedFilm1.getId(), savedUser1.getId());
+        filmLikeStorage.likeFilm(savedFilm1.getId(), savedUser2.getId());
+
+        filmLikeStorage.likeFilm(savedFilm2.getId(), savedUser1.getId());
+        filmLikeStorage.likeFilm(savedFilm2.getId(), savedUser2.getId());
+
+        List<Film> commonFilms = filmDbStorage.findCommonFilms(savedUser1.getId(), savedUser2.getId());
+
+        List<Long> actualIds = commonFilms.stream().map(Film::getId).toList();
+        List<Long> expectedIds = List.of(savedFilm1.getId(), savedFilm2.getId());
+
+        assertThat(actualIds).containsExactlyInAnyOrderElementsOf(expectedIds);
+    }
 }

@@ -16,4 +16,6 @@ public interface FilmStorage {
     Film updateFilm(Film film);
 
     List<Film> getTopN(int count);
+
+    List<Film> findCommonFilms(long userId, long friendId);
 }

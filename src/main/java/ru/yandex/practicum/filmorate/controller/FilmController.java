@@ -61,6 +61,11 @@ public class FilmController {
         return service.getTopN();
     }
 
+    @GetMapping("/common")
+    public Collection<Film> getCommonFilms(@RequestParam long userId, @RequestParam long friendId) {
+        return service.getCommonFilms(userId, friendId);
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFound(final NotFoundException e) {
