@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.UserFeed;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -126,6 +127,11 @@ public class InMemoryUserStorage implements UserStorage {
         return getCommonFriends(user.get(), otherUser.get());
     }
 
+    @Override
+    public Collection<UserFeed> getUserFeed(long id){
+        throw new NotFoundException("Метод getUserFeed не реализован для inMemoryUserStorage");
+    }
+
     private long getNextId() {
         long currentMaxId = users.keySet()
                 .stream()
@@ -134,4 +140,5 @@ public class InMemoryUserStorage implements UserStorage {
                 .orElse(0);
         return ++currentMaxId;
     }
+
 }

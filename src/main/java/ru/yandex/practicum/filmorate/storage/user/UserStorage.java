@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.UserFeed;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface UserStorage {
@@ -22,5 +24,7 @@ public interface UserStorage {
     List<User> getUserFriends(long userId);
 
     Collection<User> getCommonFriends(long userId, long otherUserId);
+
+    Collection<UserFeed> getUserFeed(long id);
 
 }
