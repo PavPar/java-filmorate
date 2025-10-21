@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dal.FilmRepository;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.util.DirectorFilmSortValues;
 
 import java.util.Collection;
 import java.util.List;
@@ -49,5 +50,9 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getTopN(int count) {
         return filmRepository.getTopN(count);
+    }
+
+    public List<Film> getDirectorFilms(Long directorId, DirectorFilmSortValues sortBy) {
+        return filmRepository.getDirectorFilms(directorId, sortBy);
     }
 }
