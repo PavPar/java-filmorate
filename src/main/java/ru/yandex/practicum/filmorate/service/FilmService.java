@@ -120,6 +120,8 @@ public class FilmService {
     }
 
     public Collection<Film> getDirectorsFilm(Long directorId, DirectorFilmSortValues sortBy) {
+        directorStorage.getDirector(directorId)
+                .orElseThrow(() -> new NotFoundException("director wasn't found"));
         List<Film> films = filmStorage.getDirectorFilms(directorId, sortBy);
 
         films.forEach(film -> {
