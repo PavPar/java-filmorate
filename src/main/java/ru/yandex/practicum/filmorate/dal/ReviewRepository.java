@@ -4,6 +4,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.InternalServerException;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.util.List;
@@ -50,28 +52,28 @@ public class ReviewRepository extends BaseRepository<Review> {
 
     private static final String ADD_QUERY = """
             INSERT INTO PUBLIC.\"review\" (content, is_positive, user_id, film_id)
-            VALUES (?, ?, ?, ?)
+            VALUES (?, ?, ?, ?);
             """;
 
     private static final String UPDATE_QUERY = """
             UPDATE PUBLIC.\"review\"
             SET content = ?, is_positive = ?
-            WHERE review_id = ?
-            """;
+            WHERE review_id = ?;
+            """+USER_FEED_QUERY;
 
     private static final String DELETE_QUERY = """
             DELETE FROM PUBLIC.\"review\"
-            WHERE review_id = ?
-            """;
+            WHERE review_id = ?;
+            """+USER_FEED_QUERY;
 
     private static final String INSERT_LIKE = """
             INSERT INTO PUBLIC.\"review_like\" (review_id, user_id, is_positive)
-            VALUES (?, ?, ?)
+            VALUES (?, ?, ?);
             """;
 
     private static final String DELETE_LIKE = """
             DELETE FROM PUBLIC.\"review_like\"
-            WHERE review_id = ? AND user_id = ?
+            WHERE review_id = ? AND user_id = ?;
             """;
 
     private static final String CHECK_LIKE_EXISTS = """
@@ -103,16 +105,20 @@ public class ReviewRepository extends BaseRepository<Review> {
 
     public Optional<Review> create(Review review) {
         long id = insert(ADD_QUERY, review.getContent(), review.getIsPositive(), review.getUserId(), review.getFilmId());
+        insertNoKey(USER_FEED_QUERY, review.getUserId(), EventType.REVIEW.name(), Operation.ADD.name(), id);
         return findById(id);
     }
 
     public Review update(Review review) {
-        update(UPDATE_QUERY, review.getContent(), review.getIsPositive(), review.getReviewId());
+        update(UPDATE_QUERY, review.getContent(), review.getIsPositive(), review.getReviewId(),
+                +review.getUserId(), EventType.REVIEW.name(), Operation.UPDATE.name(), review.getReviewId());
         return findById(review.getReviewId()).orElseThrow(() -> new InternalServerException("Failed to update review with ID: " + review.getReviewId()));
     }
 
     public void delete(Long id) {
-        update(DELETE_QUERY, id);
+        Optional<Review> review = findOne(GET_ONE_QUERY, id);
+        review.orElseThrow(() -> new InternalServerException("Failed to update review with ID: " + id));
+        update(DELETE_QUERY, id, review.get().getUserId(), EventType.REVIEW.name(), Operation.REMOVE.name(), review.get().getReviewId());
     }
 
     public boolean hasUserVoted(Long reviewId, Long userId) {

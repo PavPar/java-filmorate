@@ -86,13 +86,13 @@ public class UserRepository extends BaseRepository<User> {
     }
 
     public Collection<User> addFriend(long userId, long friendId) {
-        insertNoKey(ADD_FRIEND_QUERY, userId, friendId, userId, EventType.FRIEND.name(), Operation.ADD.name(), userId);
+        insertNoKey(ADD_FRIEND_QUERY, userId, friendId, userId, EventType.FRIEND.name(), Operation.ADD.name(), friendId);
 
         return getFriends(userId);
     }
 
     public Collection<User> removeFriend(long userId, long friendId) {
-        delete(DELETE_FRIEND_QUERY, userId, friendId, userId, EventType.FRIEND.name(), Operation.REMOVE.name(), userId);
+        delete(DELETE_FRIEND_QUERY, userId, friendId, userId, EventType.FRIEND.name(), Operation.REMOVE.name(), friendId);
         return getFriends(userId);
     }
 
