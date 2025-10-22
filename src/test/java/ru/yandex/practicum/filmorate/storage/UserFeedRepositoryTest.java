@@ -84,7 +84,7 @@ public class UserFeedRepositoryTest {
                 .atZone(ZoneId.of("Europe/Moscow"))
                 .toInstant()
                 .toEpochMilli();
-        assertTrue(event1.getTimestamp()>moscowTimestamp,
+        assertTrue(event1.getTimestamp() > moscowTimestamp,
                 "Timestamp должен быть после 1 января 2025 года");
 
     }
@@ -136,7 +136,7 @@ public class UserFeedRepositoryTest {
                 .atZone(ZoneId.of("Europe/Moscow"))
                 .toInstant()
                 .toEpochMilli();
-        assertTrue(event1.getTimestamp()>moscowTimestamp,
+        assertTrue(event1.getTimestamp() > moscowTimestamp,
                 "Timestamp должен быть после 1 января 2025 года");
 
 
@@ -186,7 +186,7 @@ public class UserFeedRepositoryTest {
                 .atZone(ZoneId.of("Europe/Moscow"))
                 .toInstant()
                 .toEpochMilli();
-        assertTrue(event1.getTimestamp()>moscowTimestamp,
+        assertTrue(event1.getTimestamp() > moscowTimestamp,
                 "Timestamp должен быть после 1 января 2025 года");
 
 
@@ -237,7 +237,7 @@ public class UserFeedRepositoryTest {
                 .atZone(ZoneId.of("Europe/Moscow"))
                 .toInstant()
                 .toEpochMilli();
-        assertTrue(event1.getTimestamp()>moscowTimestamp,
+        assertTrue(event1.getTimestamp() > moscowTimestamp,
                 "Timestamp должен быть после 1 января 2025 года");
     }
 
@@ -269,12 +269,12 @@ public class UserFeedRepositoryTest {
 
         Review created = reviewStorage.create(review);
 
-        Collection<UserFeed> UserFeedTest1 = userDbStorage.getUserFeed(savedUser1.getId());
+        Collection<UserFeed> UserFeedTest = userDbStorage.getUserFeed(savedUser1.getId());
 
-        assertNotNull(UserFeedTest1, "UserFeed коллекция не должна быть null");
-        assertEquals(1, UserFeedTest1.size(), "Должно быть 1 событие в ленте");
+        assertNotNull(UserFeedTest, "UserFeed коллекция не должна быть null");
+        assertEquals(1, UserFeedTest.size(), "Должно быть 1 событие в ленте");
 
-        List<UserFeed> feedList = new ArrayList<>(UserFeedTest1);
+        List<UserFeed> feedList = new ArrayList<>(UserFeedTest);
 
         UserFeed event1 = feedList.get(0);
 
@@ -287,10 +287,8 @@ public class UserFeedRepositoryTest {
                 .atZone(ZoneId.of("Europe/Moscow"))
                 .toInstant()
                 .toEpochMilli();
-        assertTrue(event1.getTimestamp()>moscowTimestamp,
+        assertTrue(event1.getTimestamp() > moscowTimestamp,
                 "Timestamp должен быть после 1 января 2025 года");
-
-
     }
 
     @Test
@@ -321,7 +319,7 @@ public class UserFeedRepositoryTest {
 
         Review created = reviewStorage.create(review);
 
-        created.setContent(created.getContent()+" тест");
+        created.setContent(created.getContent() + " тест");
 
         reviewStorage.update(created);
 
@@ -345,7 +343,7 @@ public class UserFeedRepositoryTest {
                 .atZone(ZoneId.of("Europe/Moscow"))
                 .toInstant()
                 .toEpochMilli();
-        assertTrue(event1.getTimestamp()>moscowTimestamp,
+        assertTrue(event1.getTimestamp() > moscowTimestamp,
                 "Timestamp должен быть после 1 января 2025 года");
     }
 
@@ -399,7 +397,7 @@ public class UserFeedRepositoryTest {
                 .atZone(ZoneId.of("Europe/Moscow"))
                 .toInstant()
                 .toEpochMilli();
-        assertTrue(event1.getTimestamp()>moscowTimestamp,
+        assertTrue(event1.getTimestamp() > moscowTimestamp,
                 "Timestamp должен быть после 1 января 2025 года");
 
 
