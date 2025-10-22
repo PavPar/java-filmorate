@@ -10,7 +10,6 @@ import ru.yandex.practicum.filmorate.model.UserFeed;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Component("userDbStorage")
@@ -96,7 +95,7 @@ public class UserDbStorage implements UserStorage {
         return userRepository.getCommonFriends(userId, otherUserId);
     }
 
-    public Collection<UserFeed> getUserFeed(long userId){
+    public Collection<UserFeed> getUserFeed(long userId) {
         return userFeedRepository.getUserFeed(userId);
     }
 
