@@ -64,12 +64,12 @@ public class UserFeedRepositoryTest {
         Set<Long> filmLikes = filmLikeStorage.getFilmLikes(savedFilm1.getId());
         assertTrue(filmLikes.contains(savedUser1.getId()));
 
-        Collection<UserFeed> UserFeedTest1 = userDbStorage.getUserFeed(savedUser1.getId());
+        Collection<UserFeed> UserFeedTest = userDbStorage.getUserFeed(savedUser1.getId());
 
-        assertNotNull(UserFeedTest1, "UserFeed коллекция не должна быть null");
-        assertEquals(1, UserFeedTest1.size(), "Должно быть 1 событие в ленте");
+        assertNotNull(UserFeedTest, "UserFeed коллекция не должна быть null");
+        assertEquals(1, UserFeedTest.size(), "Должно быть 1 событие в ленте");
 
-        List<UserFeed> feedList = new ArrayList<>(UserFeedTest1);
+        List<UserFeed> feedList = new ArrayList<>(UserFeedTest);
 
         UserFeed event1 = feedList.get(0);
 
@@ -116,12 +116,12 @@ public class UserFeedRepositoryTest {
         filmLikes = filmLikeStorage.getFilmLikes(savedFilm1.getId());
         assertFalse(filmLikes.contains(savedUser1.getId()));
 
-        Collection<UserFeed> UserFeedTest1 = userDbStorage.getUserFeed(savedUser1.getId());
+        Collection<UserFeed> UserFeedTest = userDbStorage.getUserFeed(savedUser1.getId());
 
-        assertNotNull(UserFeedTest1, "UserFeed коллекция не должна быть null");
-        assertEquals(2, UserFeedTest1.size(), "Должно быть 2 события в ленте");
+        assertNotNull(UserFeedTest, "UserFeed коллекция не должна быть null");
+        assertEquals(2, UserFeedTest.size(), "Должно быть 2 события в ленте");
 
-        List<UserFeed> feedList = new ArrayList<>(UserFeedTest1);
+        List<UserFeed> feedList = new ArrayList<>(UserFeedTest);
 
         UserFeed event1 = feedList.get(1);
 
@@ -166,12 +166,12 @@ public class UserFeedRepositoryTest {
 
         userDbStorage.addFriend(savedUser1.getId(), savedUser2.getId());
 
-        Collection<UserFeed> UserFeedTest1 = userDbStorage.getUserFeed(savedUser1.getId());
+        Collection<UserFeed> UserFeedTest = userDbStorage.getUserFeed(savedUser1.getId());
 
-        assertNotNull(UserFeedTest1, "UserFeed коллекция не должна быть null");
-        assertEquals(1, UserFeedTest1.size(), "Должно быть 1 событие в ленте");
+        assertNotNull(UserFeedTest, "UserFeed коллекция не должна быть null");
+        assertEquals(1, UserFeedTest.size(), "Должно быть 1 событие в ленте");
 
-        List<UserFeed> feedList = new ArrayList<>(UserFeedTest1);
+        List<UserFeed> feedList = new ArrayList<>(UserFeedTest);
 
         UserFeed event1 = feedList.get(0);
 
@@ -217,12 +217,12 @@ public class UserFeedRepositoryTest {
         userDbStorage.addFriend(savedUser1.getId(), savedUser2.getId());
         userDbStorage.removeFriend(savedUser1.getId(), savedUser2.getId());
 
-        Collection<UserFeed> UserFeedTest1 = userDbStorage.getUserFeed(savedUser1.getId());
+        Collection<UserFeed> UserFeedTest = userDbStorage.getUserFeed(savedUser1.getId());
 
-        assertNotNull(UserFeedTest1, "UserFeed коллекция не должна быть null");
-        assertEquals(2, UserFeedTest1.size(), "Должно быть 2 события в ленте");
+        assertNotNull(UserFeedTest, "UserFeed коллекция не должна быть null");
+        assertEquals(2, UserFeedTest.size(), "Должно быть 2 события в ленте");
 
-        List<UserFeed> feedList = new ArrayList<>(UserFeedTest1);
+        List<UserFeed> feedList = new ArrayList<>(UserFeedTest);
 
         UserFeed event1 = feedList.get(1);
 
