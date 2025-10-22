@@ -128,7 +128,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public Collection<UserFeed> getUserFeed(long id){
+    public Collection<UserFeed> getUserFeed(long id) {
         throw new NotFoundException("Метод getUserFeed не реализован для inMemoryUserStorage");
     }
 
