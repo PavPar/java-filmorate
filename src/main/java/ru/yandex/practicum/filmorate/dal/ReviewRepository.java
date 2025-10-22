@@ -59,12 +59,12 @@ public class ReviewRepository extends BaseRepository<Review> {
             UPDATE PUBLIC.\"review\"
             SET content = ?, is_positive = ?
             WHERE review_id = ?;
-            """+USER_FEED_QUERY;
+            """ + USER_FEED_QUERY;
 
     private static final String DELETE_QUERY = """
             DELETE FROM PUBLIC.\"review\"
             WHERE review_id = ?;
-            """+USER_FEED_QUERY;
+            """ + USER_FEED_QUERY;
 
     private static final String INSERT_LIKE = """
             INSERT INTO PUBLIC.\"review_like\" (review_id, user_id, is_positive)
