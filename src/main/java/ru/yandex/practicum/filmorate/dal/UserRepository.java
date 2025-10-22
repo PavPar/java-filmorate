@@ -6,11 +6,8 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.model.UserFeed;
-
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -29,10 +26,9 @@ public class UserRepository extends BaseRepository<User> {
             ")";
     private static final String ADD_FRIEND_QUERY = "INSERT INTO PUBLIC.\"user_friend\"\n" +
             "(USER_ID, FRIEND_ID, IS_ACCEPTED)\n" +
-            "VALUES(?, ?, TRUE);"+USER_FEED_QUERY;
+            "VALUES(?, ?, TRUE);" + USER_FEED_QUERY;
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM PUBLIC.\"user_friend\"\n" +
-            "WHERE  USER_ID=? AND FRIEND_ID=?;"
-            +USER_FEED_QUERY;
+            "WHERE  USER_ID=? AND FRIEND_ID=?;" + USER_FEED_QUERY;
     private static final String GET_COMMON_FRIENDS = "SELECT * \n" +
             "FROM PUBLIC.\"user\" u \n" +
             "WHERE u.id IN (\n" +
@@ -44,6 +40,7 @@ public class UserRepository extends BaseRepository<User> {
             "FROM PUBLIC.\"user_friend\" uf \n" +
             "WHERE uf.USER_ID = ? AND uf.IS_ACCEPTED = TRUE\n" +
             ")";
+
     public UserRepository(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper, User.class);
     }
