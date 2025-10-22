@@ -51,4 +51,9 @@ public class Film {
         }
         return directors;
     }
+
+    public void addGenre(Genre genre) {
+        genres.add(genre);
+    }
+
 }

@@ -56,18 +56,8 @@ public class FilmService {
         filmLikeStorage.dislikeFilm(filmId, userId);
     }
 
-    public Collection<Film> getTopN(int count) {
-        List<Film> films = filmStorage.getTopN(count);
-        for (Film film : films) {
-            film.setGenres(genreStorage.getFilmGenre(film.getId()));
-            film.setMpa(mpaStorage.getById(film.getMpa().getId()));
-            film.setLikes(filmLikeStorage.getFilmLikes(film.getId()));
-        }
-        return films;
-    }
-
-    public Collection<Film> getTopN() {
-        return filmStorage.getTopN(10);
+    public Collection<Film> getTopN(int count, int genreId, int year) {
+        return filmStorage.getTopN(count, genreId, year);
     }
 
     public Film updateFilm(@Valid Film film) {

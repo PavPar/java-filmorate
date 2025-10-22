@@ -16,7 +16,7 @@ public interface FilmStorage {
 
     Film updateFilm(Film film);
 
-    List<Film> getTopN(int count);
+    List<Film> getTopN(int count, int genreId, int year);
 
     List<Film> getDirectorFilms(Long directorId, DirectorFilmSortValues sortBy);
 }

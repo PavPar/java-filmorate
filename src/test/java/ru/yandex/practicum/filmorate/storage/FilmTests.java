@@ -16,6 +16,7 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -136,12 +137,21 @@ public class FilmTests {
 
     @Test
     void getTopN() {
+
+        List<Genre> lGenre = new ArrayList<Genre>();
+        Genre genre = Genre.builder()
+                .id(1)
+                .name("Комедия")
+                .build();
+        lGenre.add(genre);
+
         Film film1 = Film.builder()
                 .name("test-1")
                 .description("test")
                 .releaseDate(LocalDate.of(1999, 3, 31))
                 .duration(136)
                 .mpa(Mpa.builder().id(1).build())
+                .genres(lGenre)
                 .build();
         Film film2 = Film.builder()
                 .name("test-2")
@@ -156,6 +166,7 @@ public class FilmTests {
                 .releaseDate(LocalDate.of(1999, 3, 31))
                 .duration(136)
                 .mpa(Mpa.builder().id(1).build())
+                .genres(lGenre)
                 .build();
 
         User user1 = User.builder()
@@ -194,7 +205,7 @@ public class FilmTests {
         filmLikeStorage.likeFilm(savedFilm3.getId(), savedUser2.getId());
         filmLikeStorage.likeFilm(savedFilm3.getId(), savedUser3.getId());
 
-        List<Film> topN = filmDbStorage.getTopN(3);
+        List<Film> topN = filmDbStorage.getTopN(3,-1,1999);
 
         assertTrue(topN.get(0).getId() == savedFilm3.getId());
         assertTrue(topN.get(1).getId() == savedFilm2.getId());
