@@ -19,4 +19,8 @@ public interface FilmStorage {
     List<Film> getTopN(int count, int genreId, int year);
 
     List<Film> getDirectorFilms(Long directorId, DirectorFilmSortValues sortBy);
+
+    public List<Film> getFilmsByIds(Collection<Long> ids);
+
+    void deleteFilm(long id);
 }

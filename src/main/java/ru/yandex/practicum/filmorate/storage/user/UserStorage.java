@@ -26,4 +26,5 @@ public interface UserStorage {
 
     Collection<UserFeed> getUserFeed(long id);
 
+    void deleteUser(long id);
 }

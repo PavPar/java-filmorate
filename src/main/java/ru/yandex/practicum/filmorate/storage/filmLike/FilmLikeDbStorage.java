@@ -3,7 +3,9 @@ package ru.yandex.practicum.filmorate.storage.filmLike;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dal.FilmLikeRepository;
+import ru.yandex.practicum.filmorate.model.FilmLike;
 
+import java.util.Collection;
 import java.util.Set;
 
 @Component
@@ -29,5 +31,10 @@ public class FilmLikeDbStorage implements FilmLikeStorage {
     @Override
     public Set<Long> getFilmLikes(long filmId) {
         return repository.getFilmLikes(filmId);
+    }
+
+    @Override
+    public Collection<FilmLike> getUsersWithSameFilmLikes(long userId) {
+        return repository.getUsersWithSameFilmLikes(userId);
     }
 }

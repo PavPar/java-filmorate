@@ -102,7 +102,7 @@ public class InMemoryUserStorage implements UserStorage {
         Optional<User> user = getUser(userId);
 
         if (user.isEmpty()) {
-            throw new NotFoundException("Пользователь  не найден");
+            return List.of();
         }
 
         return getUserFriends(user.get());
@@ -139,6 +139,14 @@ public class InMemoryUserStorage implements UserStorage {
                 .max()
                 .orElse(0);
         return ++currentMaxId;
+    }
+
+    @Override
+    public void deleteUser(long id) {
+        if (!users.containsKey(id)) {
+            throw new NotFoundException("Пользователь не найден");
+        }
+        users.remove(id);
     }
 
 }

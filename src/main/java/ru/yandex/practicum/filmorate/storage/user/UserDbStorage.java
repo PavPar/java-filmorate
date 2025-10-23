@@ -99,4 +99,13 @@ public class UserDbStorage implements UserStorage {
         return userFeedRepository.getUserFeed(userId);
     }
 
+
+    @Override
+    public void deleteUser(long id) {
+        Optional<User> user = userRepository.findOne(id);
+        if (user.isEmpty()) {
+            throw new NotFoundException("Пользователь не найден");
+        }
+        userRepository.delete(id);
+    }
 }

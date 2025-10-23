@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.InternalServerException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.util.DirectorFilmSortValues;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,6 +48,7 @@ public class FilmRepository extends BaseRepository<Film> {
             ") films \n";
 
     private static final String GET_TOP_N_QUERY_LIMIT = GET_TOP_N_QUERY_BASE + " LIMIT ?\n";
+    private static final String DELETE_FILM_QUERY = "DELETE FROM PUBLIC.\"film\" WHERE id = ?";
 
     public FilmRepository(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper, Film.class);
@@ -93,11 +95,20 @@ public class FilmRepository extends BaseRepository<Film> {
         boolean allGenre = genreId < 0;
 
         if (count > 0) {
-            return this.findManyExtract(GET_TOP_N_QUERY_LIMIT, new FilmWithItemsExtractor(),year, allYear, genreId, allGenre, count);
+            return this.findManyExtract(GET_TOP_N_QUERY_LIMIT, new FilmWithItemsExtractor(), year, allYear, genreId, allGenre, count);
         } else {
-            return this.findManyExtract(GET_TOP_N_QUERY_BASE, new FilmWithItemsExtractor(),year, allYear, genreId, allGenre);
+            return this.findManyExtract(GET_TOP_N_QUERY_BASE, new FilmWithItemsExtractor(), year, allYear, genreId, allGenre);
+        }
+    }
+
+    public List<Film> getFilmsByIds(Collection<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
         }
 
+        String placeholders = String.join(",", ids.stream().map(id -> "?").toList());
+        String sql = "SELECT * FROM PUBLIC.\"film\" WHERE id IN (" + placeholders + ")";
+        return findMany(sql, ids.toArray());
     }
 
     private static final String BASE_FILM_DIRECTOR_QUERY = """
@@ -126,5 +137,11 @@ public class FilmRepository extends BaseRepository<Film> {
             query += ORDER_BY_LIKES;
         }
         return this.findMany(query, directorId);
+    }
+
+    public void delete(long id) {
+        delete("DELETE FROM PUBLIC.\"user_film_like\" WHERE film_id = ?", id);
+        delete("DELETE FROM PUBLIC.\"film_genre\" WHERE film_id = ?", id);
+        delete("DELETE FROM PUBLIC.\"film\" WHERE id = ?", id);
     }
 }
