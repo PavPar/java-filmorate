@@ -24,5 +24,7 @@ public interface FilmStorage {
 
     public List<Film> getFilmsByIds(Collection<Long> ids);
 
+    public List<Film> getFilmsByIdsOrderedByPopularity(Collection<Long> ids);
+
     void deleteFilm(long id);
 }

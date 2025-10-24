@@ -100,6 +100,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getFilmsByIdsOrderedByPopularity(Collection<Long> ids) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
     public List<Film> getDirectorFilms(Long directorId, DirectorFilmSortValues sortBy) {
         return List.of();
     }
