@@ -2,9 +2,11 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dal.UserFeedRepository;
 import ru.yandex.practicum.filmorate.dal.UserRepository;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.UserFeed;
 
 import java.util.Collection;
 import java.util.List;
@@ -13,10 +15,12 @@ import java.util.Optional;
 @Component("userDbStorage")
 public class UserDbStorage implements UserStorage {
     private final UserRepository userRepository;
+    private final UserFeedRepository userFeedRepository;
 
     @Autowired
-    public UserDbStorage(UserRepository userRepository) {
+    public UserDbStorage(UserRepository userRepository, UserFeedRepository userFeedRepository) {
         this.userRepository = userRepository;
+        this.userFeedRepository = userFeedRepository;
     }
 
     @Override
@@ -90,6 +94,11 @@ public class UserDbStorage implements UserStorage {
 
         return userRepository.getCommonFriends(userId, otherUserId);
     }
+
+    public Collection<UserFeed> getUserFeed(long userId) {
+        return userFeedRepository.getUserFeed(userId);
+    }
+
 
     @Override
     public void deleteUser(long id) {

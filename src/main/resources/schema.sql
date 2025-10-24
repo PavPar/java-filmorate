@@ -87,6 +87,16 @@ CREATE TABLE IF NOT EXISTS PUBLIC."review_like" (
     is_positive BOOLEAN NOT NULL,
     PRIMARY KEY (review_id, user_id)
 );
+CREATE TABLE IF NOT EXISTS PUBLIC."user_feed" (
+	event_id BIGINT NOT NULL AUTO_INCREMENT,
+	entity_id BIGINT NOT NULL,
+	user_id BIGINT NOT NULL,
+	event_type varchar NOT NULL CHECK (event_type IN ('LIKE', 'REVIEW', 'FRIEND')),
+	operation varchar NOT NULL CHECK (operation IN ('REMOVE', 'ADD', 'UPDATE')),
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	CONSTRAINT USER_FEED_PK PRIMARY KEY (event_id)
+);
+
 
 MERGE INTO PUBLIC."mpa"
   KEY(ID)

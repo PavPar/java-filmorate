@@ -3,8 +3,9 @@ package ru.yandex.practicum.filmorate.dal;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.User;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -16,8 +17,8 @@ public class UserRepository extends BaseRepository<User> {
     private static final String UPDATE_USER_QUERY = "UPDATE PUBLIC.\"user\" SET LOGIN=?, NAME=?, BIRTHDAY=?, EMAIL=? WHERE ID=?";
     private static final String ADD_USER_QUERY = "INSERT INTO PUBLIC.\"user\"(LOGIN, NAME, BIRTHDAY, EMAIL)" + "VALUES (?, ?, ?, ?)";
     private static final String GET_FRIENDS_QUERY = "SELECT * \n" + "FROM PUBLIC.\"user\" u \n" + "WHERE u.id IN (\n" + "SELECT uf.FRIEND_ID\n" + "FROM PUBLIC.\"user_friend\" uf \n" + "WHERE uf.USER_ID = ? AND uf.IS_ACCEPTED = true\n" + ")";
-    private static final String ADD_FRIEND_QUERY = "INSERT INTO PUBLIC.\"user_friend\"\n" + "(USER_ID, FRIEND_ID, IS_ACCEPTED)\n" + "VALUES(?, ?, TRUE);";
-    private static final String DELETE_FRIEND_QUERY = "DELETE FROM PUBLIC.\"user_friend\"\n" + "WHERE  USER_ID=? AND FRIEND_ID=?";
+    private static final String ADD_FRIEND_QUERY = "INSERT INTO PUBLIC.\"user_friend\"\n" + "(USER_ID, FRIEND_ID, IS_ACCEPTED)\n" + "VALUES(?, ?, TRUE);" + USER_FEED_QUERY;
+    private static final String DELETE_FRIEND_QUERY = "DELETE FROM PUBLIC.\"user_friend\"\n" + "WHERE  USER_ID=? AND FRIEND_ID=?;" + USER_FEED_QUERY;
     private static final String GET_COMMON_FRIENDS = "SELECT * \n" + "FROM PUBLIC.\"user\" u \n" + "WHERE u.id IN (\n" + "SELECT uf.FRIEND_ID\n" + "FROM PUBLIC.\"user_friend\" uf \n" + "WHERE uf.USER_ID = ? AND uf.IS_ACCEPTED = TRUE\n" + "INTERSECT \n" + "SELECT uf.FRIEND_ID\n" + "FROM PUBLIC.\"user_friend\" uf \n" + "WHERE uf.USER_ID = ? AND uf.IS_ACCEPTED = TRUE\n" + ")";
 
     public UserRepository(JdbcTemplate jdbc, RowMapper<User> mapper) {
@@ -49,13 +50,13 @@ public class UserRepository extends BaseRepository<User> {
     }
 
     public Collection<User> addFriend(long userId, long friendId) {
-        insertNoKey(ADD_FRIEND_QUERY, userId, friendId);
+        insertNoKey(ADD_FRIEND_QUERY, userId, friendId, userId, EventType.FRIEND.name(), Operation.ADD.name(), friendId);
 
         return getFriends(userId);
     }
 
     public Collection<User> removeFriend(long userId, long friendId) {
-        delete(DELETE_FRIEND_QUERY, userId, friendId);
+        delete(DELETE_FRIEND_QUERY, userId, friendId, userId, EventType.FRIEND.name(), Operation.REMOVE.name(), friendId);
         return getFriends(userId);
     }
 
@@ -68,4 +69,5 @@ public class UserRepository extends BaseRepository<User> {
         delete("DELETE FROM PUBLIC.\"user_friend\" WHERE user_id = ? OR friend_id = ?", id, id);
         delete("DELETE FROM PUBLIC.\"user\" WHERE id = ?", id);
     }
+
 }

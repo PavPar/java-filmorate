@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.UserFeed;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
@@ -46,6 +47,11 @@ public class UserService {
     public User updateUser(@Valid User user) {
         return storage.updateUser(user);
     }
+
+    public Collection<UserFeed> getUserFeed(long id) {
+        return storage.getUserFeed(id);
+    }
+
 
     public void deleteUser(long id) {
         storage.deleteUser(id);
