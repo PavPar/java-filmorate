@@ -113,11 +113,10 @@ public class FilmService {
         }
 
         if (!Objects.isNull(film.getDirectors())) {
-            Set<Long> directorIds = film.getDirectors().stream().map(Director::getId).collect(Collectors.toSet());
-            for (long id : directorIds) {
-                directorStorage.getDirector(id);
-                filmDirectorStorage.addDirector(film.getId(), id);
-            }
+            Set<Long> incomingDirectorIds = film.getDirectors().stream().map(Director::getId).collect(Collectors.toSet());
+            Set<Director> existingStorageDirectors = this.directorStorage.getDirectorsViaIds(incomingDirectorIds);
+            this.filmDirectorStorage.addDirectors(addedFilm.getId(), new ArrayList<>(incomingDirectorIds));
+            addedFilm.setDirectors(existingStorageDirectors);
         }
 
         return addedFilm;
@@ -131,6 +130,10 @@ public class FilmService {
         });
 
         return films;
+    }
+
+    public List<Film> searchFilmsByDirectorOrTitleViaSubstring(String querySubstring, List<String> by) {
+        return this.filmStorage.searchFilmsByDirectorOrTitleViaSubstring(querySubstring, by);
     }
 
     public void deleteFilm(long id) {

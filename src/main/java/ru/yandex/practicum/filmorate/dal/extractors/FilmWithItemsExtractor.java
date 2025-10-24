@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.dal.extractors;
 
 import org.springframework.jdbc.core.ResultSetExtractor;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -8,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class FilmWithItemsExtractor implements ResultSetExtractor<List<Film>> {
@@ -38,6 +40,7 @@ public class FilmWithItemsExtractor implements ResultSetExtractor<List<Film>> {
                     currentFilm.setMpa(mpa);
                 }
                 currentFilm.setGenres(new ArrayList<>());
+                currentFilm.setDirectors(new HashSet<>());
             }
             int genreId = rs.getInt("genre_id");
             if (!rs.wasNull()) {
@@ -48,11 +51,36 @@ public class FilmWithItemsExtractor implements ResultSetExtractor<List<Film>> {
                 currentFilm.addGenre(genre);
             }
 
+            Long directorId = getLongOrNull(rs, "director_id");
+            if (directorId != null) {
+                String directorName = this.getStringOrNull(rs, "director_name");
+                Director director = Director.builder().id(directorId).name(directorName).build();
+                if (!currentFilm.getDirectors().contains(director)) {
+                    currentFilm.getDirectors().add(director);
+                }
+            }
         }
         if (currentFilm != null) {
             films.add(currentFilm);
         }
         return films;
     }
-}
 
+    private Long getLongOrNull(ResultSet rs, String column) {
+        try {
+            long val = rs.getLong(column);
+            return rs.wasNull() ? null : val;
+        } catch (SQLException e) {
+            return null;
+        }
+    }
+
+    private String getStringOrNull(ResultSet rs, String columnLabel) {
+        try {
+            String value = rs.getString(columnLabel);
+            return rs.wasNull() ? null : value;
+        } catch (SQLException e) {
+            return null;
+        }
+    }
+}

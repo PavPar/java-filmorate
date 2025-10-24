@@ -2,11 +2,17 @@ package ru.yandex.practicum.filmorate.dal;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dal.mapper.DirectorRowMapper;
 import ru.yandex.practicum.filmorate.model.Director;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class DirectorRepository extends BaseRepository<Director> {
@@ -15,6 +21,7 @@ public class DirectorRepository extends BaseRepository<Director> {
     private static final String CREATE_QUERY = "INSERT INTO PUBLIC.\"director\" (name) VALUES (?)";
     private static final String UPDATE_QUERY = "UPDATE PUBLIC.\"director\" SET name=? WHERE id=?";
     private static final String DELETE_QUERY = "DELETE FROM PUBLIC.\"director\" WHERE id = ?";
+    private static final String GET_DIRECTORS_VIA_IDS = "SELECT * FROM PUBLIC.\"director\" WHERE id IN (:ids);";
 
     public DirectorRepository(JdbcTemplate jdbc, RowMapper<Director> mapper) {
         super(jdbc, mapper, Director.class);
@@ -41,5 +48,17 @@ public class DirectorRepository extends BaseRepository<Director> {
 
     public void remove(long id) {
         delete(DELETE_QUERY, id);
+    }
+
+    public Set<Director> getDirectorsViaIds(Set<Long> incomingDirectorIds) {
+        if (incomingDirectorIds.isEmpty()) {
+            return Set.of();
+        }
+
+        final NamedParameterJdbcOperations npjt = new NamedParameterJdbcTemplate(jdbc);
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("ids", incomingDirectorIds);
+
+        return new HashSet<>(npjt.query(GET_DIRECTORS_VIA_IDS, params, new DirectorRowMapper()));
     }
 }

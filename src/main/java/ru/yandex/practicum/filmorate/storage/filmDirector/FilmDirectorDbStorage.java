@@ -24,6 +24,12 @@ public class FilmDirectorDbStorage implements FilmDirectorStorage {
         return repository.getDirectorFilmsIds(directorId);
     }
 
+
+    @Override
+    public void addDirectors(Long filmId, List<Long> directorIds) {
+        this.repository.addDirectors(filmId, directorIds);
+    }
+
     @Override
     public void addDirector(long filmId, long directorId) {
         repository.addFilmDirector(filmId, directorId);

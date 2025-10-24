@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Director;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Component
 @Qualifier("directorDbStorage")
@@ -48,5 +49,10 @@ public class DirectorDbStorage implements DirectorStorage {
     @Override
     public List<Director> getDirectors() {
         return directorRepository.getAll();
+    }
+
+    @Override
+    public Set<Director> getDirectorsViaIds(Set<Long> incomingDirectorIds) {
+        return this.directorRepository.getDirectorsViaIds(incomingDirectorIds);
     }
 }

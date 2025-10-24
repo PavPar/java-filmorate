@@ -38,6 +38,7 @@ public class Film {
     private List<Genre> genres;
     private Set<Director> directors = new HashSet<>();
 
+
     public Set<Long> getLikes() {
         if (Objects.isNull(likes)) {
             likes = new HashSet<>();

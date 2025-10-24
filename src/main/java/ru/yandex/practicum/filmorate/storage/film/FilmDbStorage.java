@@ -61,6 +61,10 @@ public class FilmDbStorage implements FilmStorage {
         return filmRepository.getDirectorFilms(directorId, sortBy);
     }
 
+    public List<Film> searchFilmsByDirectorOrTitleViaSubstring(String querySubstring, List<String> by) {
+        return this.filmRepository.searchFilmsByDirectorOrTitleViaSubstring(querySubstring,by);
+    }
+
     @Override
     public void deleteFilm(long id) {
         Optional<Film> film = filmRepository.getFilm(id);

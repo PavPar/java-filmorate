@@ -20,6 +20,8 @@ public interface FilmStorage {
 
     List<Film> getDirectorFilms(Long directorId, DirectorFilmSortValues sortBy);
 
+    List<Film> searchFilmsByDirectorOrTitleViaSubstring(String querySubstring, List<String> by);
+
     public List<Film> getFilmsByIds(Collection<Long> ids);
 
     void deleteFilm(long id);

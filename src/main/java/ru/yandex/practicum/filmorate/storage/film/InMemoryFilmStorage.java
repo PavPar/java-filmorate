@@ -105,6 +105,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> searchFilmsByDirectorOrTitleViaSubstring(String querySubstring, List<String> by) {
+        return List.of();
+    }
+
+    @Override
     public void deleteFilm(long id) {
         if (!films.containsKey(id)) {
             throw new NotFoundException("Фильм не найден");

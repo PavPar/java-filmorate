@@ -1,10 +1,14 @@
 package ru.yandex.practicum.filmorate.dal;
 
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.FilmDirector;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,5 +49,20 @@ public class FilmDirectorRepository extends BaseRepository<FilmDirector> {
 
     public void removeFilmDirector(long filmId, long directorId) {
         this.delete(DELETE_FILM_DIRECTOR_QUERY, filmId, directorId);
+    }
+
+    public void addDirectors(Long filmId, List<Long> directorIds) {
+        this.jdbc.batchUpdate(ADD_FILM_DIRECTOR_QUERY, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                ps.setLong(1, filmId);
+                ps.setLong(2, directorIds.get(i));
+            }
+
+            @Override
+            public int getBatchSize() {
+                return directorIds.size();
+            }
+        });
     }
 }

@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.util.DirectorFilmSortValues;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -52,6 +53,12 @@ public class FilmController {
     @DeleteMapping("/{id}/like/{userId}")
     public void dislikeFilm(@PathVariable long id, @PathVariable long userId) {
         service.dislikeFilm(id, userId);
+    }
+
+    @GetMapping("search")
+    public Collection<Film> searchFilms(
+            @RequestParam(required = false) String query,  @RequestParam(required = false, defaultValue = "")List<String> by) {
+        return this.service.searchFilmsByDirectorOrTitleViaSubstring(query,by);
     }
 
     @GetMapping("popular")
