@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.UserFeed;
 import ru.yandex.practicum.filmorate.service.FilmLikeService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -57,6 +58,11 @@ public class UserController {
     @GetMapping("{id}/friends/common/{otherId}")
     Collection<User> getUserCommonFriends(@PathVariable long id, @PathVariable long otherId) {
         return service.getCommonFriends(id, otherId);
+    }
+
+    @GetMapping("{id}/feed")
+    Collection<UserFeed> getUserFeed(@PathVariable long id) {
+        return service.getUserFeed(id);
     }
 
     @DeleteMapping("/{id}")

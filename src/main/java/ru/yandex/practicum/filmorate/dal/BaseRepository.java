@@ -18,6 +18,9 @@ public class BaseRepository<T> {
     protected final JdbcTemplate jdbc;
     protected final RowMapper<T> mapper;
     private final Class<T> entityType;
+    protected static final String USER_FEED_QUERY = "INSERT INTO PUBLIC.\"user_feed\"\n" +
+            "(USER_ID, EVENT_TYPE, OPERATION, ENTITY_ID)\n" +
+            "VALUES(?, ?, ?, ?);";
 
     protected Optional<T> findOne(String query, Object... params) {
         try {
