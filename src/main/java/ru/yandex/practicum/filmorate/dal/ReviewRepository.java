@@ -131,8 +131,10 @@ public class ReviewRepository extends BaseRepository<Review> {
     }
 
     public Review update(Review review) {
+        Review reviewCurrent = findById(review.getReviewId()).orElseThrow(() -> new InternalServerException("Failed to update review with ID: " + review.getReviewId()));
+
         update(UPDATE_QUERY, review.getContent(), review.getIsPositive(), review.getReviewId(),
-                +review.getUserId(), EventType.REVIEW.name(), Operation.UPDATE.name(), review.getReviewId());
+                +reviewCurrent.getUserId(), EventType.REVIEW.name(), Operation.UPDATE.name(), review.getReviewId());
         return findById(review.getReviewId()).orElseThrow(() -> new InternalServerException("Failed to update review with ID: " + review.getReviewId()));
     }
 

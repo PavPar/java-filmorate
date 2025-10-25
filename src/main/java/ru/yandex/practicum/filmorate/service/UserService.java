@@ -53,6 +53,7 @@ public class UserService {
     }
 
     public Collection<UserFeed> getUserFeed(long id) {
+        getUserById(id);
         return storage.getUserFeed(id);
     }
 
