@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -29,6 +30,23 @@ public class ReviewRepository extends BaseRepository<Review> {
             FROM PUBLIC."review" r
             )
             WHERE film_id = ?
+            ORDER BY useful DESC
+            LIMIT ?
+            """;
+    private static final String GET_ALL_QUERY_ALL = """
+            SELECT * FROM (
+            SELECT review_id,content,is_positive,user_id,film_id,
+            COALESCE((
+            SELECT SUM(CASE
+                    WHEN rl.IS_POSITIVE THEN 1
+                    ELSE -1
+                END) AS useful
+            FROM PUBLIC."review_like" rl
+            WHERE REVIEW_ID = r.review_id
+            GROUP BY rl.REVIEW_ID
+            ),0) AS useful
+            FROM PUBLIC."review" r
+            )
             ORDER BY useful DESC
             LIMIT ?
             """;
@@ -100,6 +118,9 @@ public class ReviewRepository extends BaseRepository<Review> {
     }
 
     public List<Review> findAll(Long filmId, int count) {
+        if (Objects.isNull(filmId)) {
+            return findMany(GET_ALL_QUERY_ALL, count);
+        }
         return findMany(GET_ALL_QUERY, filmId, count);
     }
 
