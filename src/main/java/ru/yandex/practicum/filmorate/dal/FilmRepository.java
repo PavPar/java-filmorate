@@ -45,7 +45,7 @@ public class FilmRepository extends BaseRepository<Film> {
             "films.genre_name \n" +
             "FROM (\n" +
             "SELECT f.id,f.name,f.description,f.RELEASE_DATE AS releaseDate,f.DURATION ,f.MPA_ID,\n" +
-            "m.name AS mpa_name, g.id AS genre_id, g.name AS genre_name\n" +
+            "m.name AS mpa_name, g.id AS genre_id, g.name AS genre_name\n, lcnt.USER_LIKE_CNT  AS USER_LIKE_CNT " +
             "FROM PUBLIC.\"film\" f LEFT JOIN (\n" +
             "SELECT film_id,count(user_id) AS user_like_cnt\n" +
             "FROM PUBLIC.\"user_film_like\"\n" +
@@ -58,7 +58,17 @@ public class FilmRepository extends BaseRepository<Film> {
             "ORDER BY lcnt.USER_LIKE_CNT  DESC\n" +
             ") films \n";
 
-    private static final String GET_TOP_N_QUERY_LIMIT = GET_TOP_N_QUERY_BASE + " LIMIT ?\n";
+    private static final String GET_TOP_N_QUERY_LIMIT = GET_TOP_N_QUERY_BASE + "WHERE films.id IN (\n" +
+            "SELECT film_id FROM ( \n" +
+            "SELECT f.id AS film_id,count(ufl.user_id)AS  likes\n" +
+            "FROM PUBLIC.\"film\" f \n" +
+            "LEFT JOIN \n" +
+            "PUBLIC.\"user_film_like\" ufl ON f.id = ufl.film_id\n" +
+            "GROUP BY f.id\n" +
+            "ORDER BY likes DESC\n" +
+            ")\n" +
+            "LIMIT ?\n" +
+            ") ORDER BY USER_LIKE_CNT  DESC\n";
     private static final String DELETE_FILM_QUERY = "DELETE FROM PUBLIC.\"film\" WHERE id = ?";
     private static final String BASE_FILM_DIRECTOR_QUERY =
             "SELECT f.id AS film_id, f.name, f.description, f.release_date AS releaseDate, f.duration, f.mpa_id, m.name AS mpa_name, " +
