@@ -5,9 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.filmDirector.FilmDirectorStorage;
@@ -138,5 +136,22 @@ public class FilmService {
 
     public void deleteFilm(long id) {
         filmStorage.deleteFilm(id);
+    }
+
+    public Collection<Film> getCommonFilms(long userId, long friendId) {
+        Optional<User> user = userStorage.getUser(userId);
+        Optional<User> friend = userStorage.getUser(friendId);
+        if (friend.isEmpty() || user.isEmpty()) {
+            throw new NotFoundException("no user/friend");
+        }
+
+        Collection<FilmLike> filmLikes = filmLikeStorage.getUsersWithSameFilmLikes(userId);
+
+        Set<Long> commonFilmIdSet = filmLikes.stream()
+                .filter(filmLike -> filmLike.getUserId() == friendId)
+                .map(FilmLike::getFilmId)
+                .collect(Collectors.toSet());
+
+        return this.filmStorage.getFilmsByIdsOrderedByPopularity(commonFilmIdSet);
     }
 }

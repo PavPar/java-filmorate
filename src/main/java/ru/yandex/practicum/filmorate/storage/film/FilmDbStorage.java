@@ -62,7 +62,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public List<Film> searchFilmsByDirectorOrTitleViaSubstring(String querySubstring, List<String> by) {
-        return this.filmRepository.searchFilmsByDirectorOrTitleViaSubstring(querySubstring,by);
+        return this.filmRepository.searchFilmsByDirectorOrTitleViaSubstring(querySubstring, by);
     }
 
     @Override
@@ -78,4 +78,11 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> getFilmsByIds(Collection<Long> ids) {
         return filmRepository.getFilmsByIds(ids);
     }
+
+    @Override
+    public List<Film> getFilmsByIdsOrderedByPopularity(Collection<Long> ids) {
+        return filmRepository.getFilmsByIdsOrderedByPopularity(ids);
+    }
+
+
 }

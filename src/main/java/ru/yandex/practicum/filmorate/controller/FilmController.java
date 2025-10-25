@@ -57,8 +57,8 @@ public class FilmController {
 
     @GetMapping("search")
     public Collection<Film> searchFilms(
-            @RequestParam(required = false) String query,  @RequestParam(required = false, defaultValue = "")List<String> by) {
-        return this.service.searchFilmsByDirectorOrTitleViaSubstring(query,by);
+            @RequestParam(required = false) String query, @RequestParam(required = false, defaultValue = "") List<String> by) {
+        return this.service.searchFilmsByDirectorOrTitleViaSubstring(query, by);
     }
 
     @GetMapping("popular")
@@ -74,6 +74,11 @@ public class FilmController {
     @DeleteMapping("/{id}")
     public void deleteFilm(@PathVariable long id) {
         service.deleteFilm(id);
+    }
+
+    @GetMapping("/common")
+    public Collection<Film> getCommonFilms(@RequestParam long userId, @RequestParam long friendId) {
+        return service.getCommonFilms(userId, friendId);
     }
 
     @ExceptionHandler
