@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 
 @Repository
 public class FilmLikeRepository extends BaseRepository<FilmLike> {
-    private static final String LIKE_FILM_QUERY = "INSERT INTO PUBLIC.\"user_film_like\"\n" +
-            "(FILM_ID, USER_ID)\n" +
-            "VALUES(?, ?);" + USER_FEED_QUERY;
+    private static final String LIKE_FILM_QUERY = "MERGE INTO PUBLIC.\"user_film_like\" (FILM_ID, USER_ID)\n" +
+            "KEY (FILM_ID, USER_ID)\n" +
+            "VALUES (?, ?);" + USER_FEED_QUERY;
     private static final String DELETE_FILM_LIKE_QUERY = "DELETE FROM PUBLIC.\"user_film_like\"\n" +
             "WHERE FILM_ID=? AND USER_ID=?;" + USER_FEED_QUERY;
     private static final String GET_FILM_LIKES = "\n" +
