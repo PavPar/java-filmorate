@@ -168,10 +168,9 @@ public class FilmService {
             throw new NotFoundException("no user/friend");
         }
 
-        Collection<FilmLike> filmLikes = filmLikeStorage.getUsersWithSameFilmLikes(userId);
+        Collection<FilmLike> filmLikes = filmLikeStorage.getSameFilmLikes(userId, friendId);
 
         Set<Long> commonFilmIdSet = filmLikes.stream()
-                .filter(filmLike -> filmLike.getUserId() == friendId)
                 .map(FilmLike::getFilmId)
                 .collect(Collectors.toSet());
 
