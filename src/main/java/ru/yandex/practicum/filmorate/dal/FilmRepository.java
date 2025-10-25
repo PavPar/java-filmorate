@@ -229,8 +229,8 @@ public class FilmRepository extends BaseRepository<Film> {
         }
 
         String placeholders = String.join(",", ids.stream().map(id -> "?").toList());
-        String sql = "SELECT * FROM PUBLIC.\"film\" WHERE id IN (" + placeholders + ")";
-        return findMany(sql, ids.toArray());
+        String sql = GET_ALL_FILMS_QUERY + " WHERE f.id IN (" + placeholders + ")";
+        return this.findManyExtract(sql, new FilmWithItemsExtractor(), ids.toArray());
     }
 
     public List<Film> getFilmsByIdsOrderedByPopularity(Collection<Long> ids) {
@@ -240,7 +240,6 @@ public class FilmRepository extends BaseRepository<Film> {
 
         String placeholders = String.join(",", ids.stream().map(id -> "?").toList());
         String sql = GET_FILMS_BY_ID_ORDERED_BY_POPULARITY.replace("?", placeholders);
-//        return findMany(sql, ids.toArray());
         return this.findManyExtract(sql, new FilmWithItemsExtractor(), ids.toArray());
     }
 
