@@ -5,7 +5,10 @@ import ru.yandex.practicum.filmorate.dal.DirectorRepository;
 import ru.yandex.practicum.filmorate.dal.FilmDirectorRepository;
 import ru.yandex.practicum.filmorate.model.Director;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -38,6 +41,11 @@ public class FilmDirectorDbStorage implements FilmDirectorStorage {
     @Override
     public void removeDirector(long filmId, long directorId) {
         repository.removeFilmDirector(filmId, directorId);
+    }
+
+    @Override
+    public void removeAllFilmDirectors(long filmId) {
+        repository.removeAllFilmDirectors(filmId);
     }
 
     @Override
