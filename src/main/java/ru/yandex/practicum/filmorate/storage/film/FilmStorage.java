@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.util.DirectorFilmSortValues;
 
 import java.util.Collection;
 import java.util.List;
@@ -15,5 +16,15 @@ public interface FilmStorage {
 
     Film updateFilm(Film film);
 
-    List<Film> getTopN(int count);
+    List<Film> getTopN(int count, int genreId, int year);
+
+    List<Film> getDirectorFilms(Long directorId, DirectorFilmSortValues sortBy);
+
+    List<Film> searchFilmsByDirectorOrTitleViaSubstring(String querySubstring, List<String> by);
+
+    public List<Film> getFilmsByIds(Collection<Long> ids);
+
+    public List<Film> getFilmsByIdsOrderedByPopularity(Collection<Long> ids);
+
+    void deleteFilm(long id);
 }

@@ -36,6 +36,8 @@ public class Film {
     private Set<Long> likes = new HashSet<>();
     private Mpa mpa;
     private List<Genre> genres;
+    private Set<Director> directors = new HashSet<>();
+
 
     public Set<Long> getLikes() {
         if (Objects.isNull(likes)) {
@@ -43,4 +45,16 @@ public class Film {
         }
         return likes;
     }
+
+    public Set<Director> getDirectors() {
+        if (Objects.isNull(directors)) {
+            directors = new HashSet<>();
+        }
+        return directors;
+    }
+
+    public void addGenre(Genre genre) {
+        genres.add(genre);
+    }
+
 }

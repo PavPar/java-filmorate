@@ -42,5 +42,8 @@ public class GenreDbStorage implements GenreStorage {
         repository.addFilmGenre(filmId, genreId);
     }
 
-
+    @Override
+    public void removeAllFilmGenres(long filmId) {
+        repository.removeAllFilmGenres(filmId);
+    }
 }

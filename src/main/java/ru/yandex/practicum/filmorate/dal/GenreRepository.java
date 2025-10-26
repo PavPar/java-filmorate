@@ -22,6 +22,8 @@ public class GenreRepository extends BaseRepository<Genre> {
     private static final String ADD_FILM_GENRE = "INSERT INTO PUBLIC.\"film_genre\"\n" +
             "(FILM_ID, GENRE_ID)\n" +
             "VALUES(?, ?);";
+    private static final String DELETE_ALL_FILM_GENRES = "DELETE FROM PUBLIC.\"film_genre\"\n" +
+            "WHERE FILM_ID=?";
 
     public GenreRepository(JdbcTemplate jdbc, RowMapper<Genre> mapper) {
         super(jdbc, mapper, Genre.class);
@@ -41,5 +43,9 @@ public class GenreRepository extends BaseRepository<Genre> {
 
     public void addFilmGenre(long filmId, long genreId) {
         insertNoKey(ADD_FILM_GENRE, filmId, genreId);
+    }
+
+    public void removeAllFilmGenres(long filmId) {
+        delete(DELETE_ALL_FILM_GENRES, filmId);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -16,13 +17,13 @@ import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @JdbcTest
@@ -136,12 +137,21 @@ public class FilmTests {
 
     @Test
     void getTopN() {
+
+        List<Genre> lGenre = new ArrayList<Genre>();
+        Genre genre = Genre.builder()
+                .id(1)
+                .name("Комедия")
+                .build();
+        lGenre.add(genre);
+
         Film film1 = Film.builder()
                 .name("test-1")
                 .description("test")
                 .releaseDate(LocalDate.of(1999, 3, 31))
                 .duration(136)
                 .mpa(Mpa.builder().id(1).build())
+                .genres(lGenre)
                 .build();
         Film film2 = Film.builder()
                 .name("test-2")
@@ -156,6 +166,7 @@ public class FilmTests {
                 .releaseDate(LocalDate.of(1999, 3, 31))
                 .duration(136)
                 .mpa(Mpa.builder().id(1).build())
+                .genres(lGenre)
                 .build();
 
         User user1 = User.builder()
@@ -194,7 +205,7 @@ public class FilmTests {
         filmLikeStorage.likeFilm(savedFilm3.getId(), savedUser2.getId());
         filmLikeStorage.likeFilm(savedFilm3.getId(), savedUser3.getId());
 
-        List<Film> topN = filmDbStorage.getTopN(3);
+        List<Film> topN = filmDbStorage.getTopN(3,-1,1999);
 
         assertTrue(topN.get(0).getId() == savedFilm3.getId());
         assertTrue(topN.get(1).getId() == savedFilm2.getId());
@@ -240,5 +251,22 @@ public class FilmTests {
         assertTrue(filmGenre.stream().filter(g -> g.getId() == 2).findFirst().get().getId() == 2);
     }
 
+    @Test
+    void deleteFilmById() {
+        Film film = Film.builder()
+                .name("To Delete")
+                .description("desc")
+                .releaseDate(LocalDate.of(2000, 1, 1))
+                .duration(100)
+                .mpa(Mpa.builder().id(1).build())
+                .build();
 
+        Film savedFilm = filmDbStorage.addFilm(film);
+        Optional<Film> beforeDelete = filmDbStorage.getFilm(savedFilm.getId());
+        assertTrue(beforeDelete.isPresent());
+
+        filmDbStorage.deleteFilm(savedFilm.getId());
+
+        assertThrows(NotFoundException.class, () -> filmDbStorage.getFilm(savedFilm.getId()));
+    }
 }

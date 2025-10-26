@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dal.FilmRepository;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.util.DirectorFilmSortValues;
 
 import java.util.Collection;
 import java.util.List;
@@ -38,7 +40,11 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Optional<Film> getFilm(long id) {
-        return filmRepository.getFilm(id);
+        Optional<Film> film = filmRepository.getFilm(id);
+        if (film.isEmpty()) {
+            throw new NotFoundException("film wasn't found");
+        }
+        return film;
     }
 
     @Override
@@ -47,7 +53,36 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getTopN(int count) {
-        return filmRepository.getTopN(count);
+    public List<Film> getTopN(int count, int genreId, int year) {
+        return filmRepository.getTopN(count, genreId, year);
     }
+
+    public List<Film> getDirectorFilms(Long directorId, DirectorFilmSortValues sortBy) {
+        return filmRepository.getDirectorFilms(directorId, sortBy);
+    }
+
+    public List<Film> searchFilmsByDirectorOrTitleViaSubstring(String querySubstring, List<String> by) {
+        return this.filmRepository.searchFilmsByDirectorOrTitleViaSubstring(querySubstring, by);
+    }
+
+    @Override
+    public void deleteFilm(long id) {
+        Optional<Film> film = filmRepository.getFilm(id);
+        if (film.isEmpty()) {
+            throw new NotFoundException("film wasn't found");
+        }
+        filmRepository.delete(id);
+    }
+
+    @Override
+    public List<Film> getFilmsByIds(Collection<Long> ids) {
+        return filmRepository.getFilmsByIds(ids);
+    }
+
+    @Override
+    public List<Film> getFilmsByIdsOrderedByPopularity(Collection<Long> ids) {
+        return filmRepository.getFilmsByIdsOrderedByPopularity(ids);
+    }
+
+
 }

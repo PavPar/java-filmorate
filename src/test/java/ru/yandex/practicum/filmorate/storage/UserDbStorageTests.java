@@ -188,5 +188,22 @@ class UserDbStorageTests {
         assertTrue(updatedUser.get().getName().equals("new-name"));
     }
 
+    @Test
+    void deleteUserById() {
+        User user = User.builder()
+                .email("delete@user.com")
+                .login("deleteUser")
+                .name("To Delete")
+                .birthday(LocalDate.of(1990, 1, 1))
+                .build();
 
+        User savedUser = userStorage.addUser(user);
+        Optional<User> beforeDelete = userStorage.getUser(savedUser.getId());
+        assertTrue(beforeDelete.isPresent());
+
+        userStorage.deleteUser(savedUser.getId());
+
+        Optional<User> afterDelete = userStorage.getUser(savedUser.getId());
+        assertTrue(afterDelete.isEmpty());
+    }
 }

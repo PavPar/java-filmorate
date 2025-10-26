@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.util.DirectorFilmSortValues;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Qualifier("InMemoryFilmStorage")
@@ -83,10 +85,40 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getTopN(int count) {
+    public List<Film> getTopN(int count, int genreId, int year) {
         Collection<Film> films = getFilms();
         return films.stream()
                 .sorted((a, b) -> b.getLikes().size() - a.getLikes().size())
                 .toList().subList(0, Math.min(films.size(), count));
+    }
+
+    @Override
+    public List<Film> getFilmsByIds(Collection<Long> ids) {
+        Set<Long> idSet = new HashSet<>(ids);
+
+        return films.values().stream().filter((film -> idSet.contains(film.getId()))).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Film> getFilmsByIdsOrderedByPopularity(Collection<Long> ids) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public List<Film> getDirectorFilms(Long directorId, DirectorFilmSortValues sortBy) {
+        return List.of();
+    }
+
+    @Override
+    public List<Film> searchFilmsByDirectorOrTitleViaSubstring(String querySubstring, List<String> by) {
+        return List.of();
+    }
+
+    @Override
+    public void deleteFilm(long id) {
+        if (!films.containsKey(id)) {
+            throw new NotFoundException("Фильм не найден");
+        }
+        films.remove(id);
     }
 }
