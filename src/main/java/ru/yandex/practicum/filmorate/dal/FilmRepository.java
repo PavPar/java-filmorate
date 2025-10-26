@@ -96,20 +96,6 @@ public class FilmRepository extends BaseRepository<Film> {
                     "                GROUP BY film_id\n" +
                     "            ) AS lc ON f.id = lc.film_id" +
                     " WHERE fd.director_id = ?";
-//    private static final String BASE_FILM_DIRECTOR_QUERY = """
-//            SELECT f.id AS film_id, f.name, f.description, f.release_date, f.duration,
-//                   f.mpa_id, m.name AS mpa_name,
-//                   COALESCE(lc.user_like_cnt, 0) AS like_count
-//            FROM PUBLIC.\"film\" AS f
-//            INNER JOIN PUBLIC.\"mpa\" AS m ON f.mpa_id = m.id
-//            INNER JOIN PUBLIC.\"film_director\" AS fd ON f.id = fd.film_id
-//            LEFT JOIN (
-//                SELECT film_id,count(user_id) AS user_like_cnt
-//                FROM PUBLIC.\"user_film_like\"
-//                GROUP BY film_id
-//            ) AS lc ON f.id = lc.film_id
-//            WHERE fd.director_id = ?
-//            """;
 
     private static final String ORDER_BY_YEAR = " ORDER BY f.release_date ASC";
     private static final String ORDER_BY_LIKES = " ORDER BY like_count DESC";

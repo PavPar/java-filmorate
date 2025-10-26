@@ -22,9 +22,9 @@ public class FilmDirectorRepository extends BaseRepository<FilmDirector> {
             INSERT INTO PUBLIC."film_director"
             (FILM_ID, DIRECTOR_ID)
             VALUES(?, ?);""";
-    // >?? Я вас убью
-    private static final String DELETE_FILM_DIRECTOR_QUERY = "DELETE FROM PUBLIC.\"user_film_like\"\n" +
-            "WHERE FILM_ID=? AND USER_ID=?;";
+
+    private static final String DELETE_FILM_DIRECTOR_QUERY = "DELETE FROM PUBLIC.\"film_director\"\n" +
+            "WHERE FILM_ID=? AND DIRECTOR_ID=?;";
     private static final String DELETE_ALL_FILM_DIRECTORS = "DELETE FROM PUBLIC.\"film_director\" WHERE FILM_ID = ?";
 
     public FilmDirectorRepository(JdbcTemplate jdbc, RowMapper<FilmDirector> mapper) {
