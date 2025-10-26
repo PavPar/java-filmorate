@@ -74,10 +74,10 @@ public class FilmLikeService {
             for (Long j : e.getValue().keySet()) {
                 for (Long k : diff.keySet()) {
                     double predictedValue =
-                            diff.get(k).get(j) + e.getValue().get(j);
-                    double finalValue = predictedValue * freq.get(k).get(j);
+                            diff.get(k).getOrDefault(j, 0.0) + e.getValue().get(j);
+                    double finalValue = predictedValue * freq.get(k).getOrDefault(j, 0);
                     uPred.put(k, uPred.getOrDefault(k, 0.0) + finalValue);
-                    uFreq.put(k, uFreq.getOrDefault(k, 0.0) + freq.get(k).get(j));
+                    uFreq.put(k, uFreq.getOrDefault(k, 0.0) + freq.get(k).getOrDefault(j, 0));
                 }
             }
         }

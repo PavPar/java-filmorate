@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 
 @Repository
 public class FilmLikeRepository extends BaseRepository<FilmLike> {
-    private static final String LIKE_FILM_QUERY = "INSERT INTO PUBLIC.\"user_film_like\"\n" +
-            "(FILM_ID, USER_ID)\n" +
-            "VALUES(?, ?);" + USER_FEED_QUERY;
+    private static final String LIKE_FILM_QUERY = "MERGE INTO PUBLIC.\"user_film_like\" (FILM_ID, USER_ID)\n" +
+            "KEY (FILM_ID, USER_ID)\n" +
+            "VALUES (?, ?);" + USER_FEED_QUERY;
     private static final String DELETE_FILM_LIKE_QUERY = "DELETE FROM PUBLIC.\"user_film_like\"\n" +
             "WHERE FILM_ID=? AND USER_ID=?;" + USER_FEED_QUERY;
     private static final String GET_FILM_LIKES = "\n" +
@@ -33,6 +33,16 @@ public class FilmLikeRepository extends BaseRepository<FilmLike> {
             "FROM PUBLIC.\"user_film_like\"\n" +
             "WHERE user_id = ?)\n" +
             ")";
+    private static final String GET_SAME_FILM_LIKES = "SELECT USER_ID ,FILM_ID \n" +
+            "FROM (\n" +
+            "SELECT USER_ID AS USER_ID,FILM_ID AS FILM_ID\n" +
+            "FROM PUBLIC.\"user_film_like\"\n" +
+            "WHERE user_id = ?) A\n" +
+            "CROSS JOIN (\n" +
+            "SELECT USER_ID AS B_USER_ID,FILM_ID AS B_FILM_ID\n" +
+            "FROM PUBLIC.\"user_film_like\"\n" +
+            "WHERE user_id = ?) B\n" +
+            "WHERE A.USER_ID != B.B_USER_ID AND A.FILM_ID = B.B_FILM_ID ";
 
     public FilmLikeRepository(JdbcTemplate jdbc, RowMapper<FilmLike> mapper) {
         super(jdbc, mapper, FilmLike.class);
@@ -52,5 +62,9 @@ public class FilmLikeRepository extends BaseRepository<FilmLike> {
 
     public Collection<FilmLike> getUsersWithSameFilmLikes(long userId) {
         return this.findMany(GET_USER_WITH_SAME_FILM_LIKES, userId);
+    }
+
+    public Collection<FilmLike> getSameFilmLikes(long userId, long friendId) {
+        return this.findMany(GET_SAME_FILM_LIKES, userId, friendId);
     }
 }

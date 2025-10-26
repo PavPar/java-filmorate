@@ -22,8 +22,10 @@ public class FilmDirectorRepository extends BaseRepository<FilmDirector> {
             INSERT INTO PUBLIC."film_director"
             (FILM_ID, DIRECTOR_ID)
             VALUES(?, ?);""";
-    private static final String DELETE_FILM_DIRECTOR_QUERY = "DELETE FROM PUBLIC.\"user_film_like\"\n" +
-            "WHERE FILM_ID=? AND USER_ID=?;";
+
+    private static final String DELETE_FILM_DIRECTOR_QUERY = "DELETE FROM PUBLIC.\"film_director\"\n" +
+            "WHERE FILM_ID=? AND DIRECTOR_ID=?;";
+    private static final String DELETE_ALL_FILM_DIRECTORS = "DELETE FROM PUBLIC.\"film_director\" WHERE FILM_ID = ?";
 
     public FilmDirectorRepository(JdbcTemplate jdbc, RowMapper<FilmDirector> mapper) {
         super(jdbc, mapper, FilmDirector.class);
@@ -49,6 +51,10 @@ public class FilmDirectorRepository extends BaseRepository<FilmDirector> {
 
     public void removeFilmDirector(long filmId, long directorId) {
         this.delete(DELETE_FILM_DIRECTOR_QUERY, filmId, directorId);
+    }
+
+    public void removeAllFilmDirectors(long filmId) {
+        this.delete(DELETE_ALL_FILM_DIRECTORS, filmId);
     }
 
     public void addDirectors(Long filmId, List<Long> directorIds) {

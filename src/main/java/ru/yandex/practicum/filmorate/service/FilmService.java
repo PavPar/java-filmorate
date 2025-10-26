@@ -45,12 +45,18 @@ public class FilmService {
     }
 
     public void likeFilm(long filmId, long userId) {
-        userStorage.getUser(userId);
+
+        if (userStorage.getUser(userId).isEmpty() || filmStorage.getFilm(filmId).isEmpty()) {
+            throw new NotFoundException("film/user not found");
+        }
+
         filmLikeStorage.likeFilm(filmId, userId);
     }
 
     public void dislikeFilm(long filmId, long userId) {
-        userStorage.getUser(userId);
+        if (userStorage.getUser(userId).isEmpty() || filmStorage.getFilm(filmId).isEmpty()) {
+            throw new NotFoundException("film/user not found");
+        }
         filmLikeStorage.dislikeFilm(filmId, userId);
     }
 
@@ -63,16 +69,35 @@ public class FilmService {
     }
 
     public Film updateFilm(@Valid Film film) {
+        Film currentFilm = getFilm(film.getId());
         Film updatedFilm = filmStorage.updateFilm(film);
+
         if (!Objects.isNull(film.getDirectors())) {
-            Set<Long> directorIds = film.getDirectors().stream().map(Director::getId).collect(Collectors.toSet());
-            for (long id : directorIds) {
-                directorStorage.getDirector(id);
-                filmDirectorStorage.addDirector(film.getId(), id);
+            Set<Long> newIds = film.getDirectors().stream().map(Director::getId).collect(Collectors.toSet());
+            Set<Long> oldIds = currentFilm.getDirectors().stream().map(Director::getId).collect(Collectors.toSet());
+
+            if (!newIds.equals(oldIds)) {
+                filmDirectorStorage.removeAllFilmDirectors(film.getId());
+                for (long id : newIds) {
+                    directorStorage.getDirector(id);
+                    filmDirectorStorage.addDirector(updatedFilm.getId(), id);
+                }
             }
-            updatedFilm.setDirectors(film.getDirectors());
         }
-        return updatedFilm;
+
+        if (!Objects.isNull(film.getGenres())) {
+            Set<Long> newIds = film.getGenres().stream().map(Genre::getId).collect(Collectors.toSet());
+            Set<Long> oldIds = currentFilm.getGenres().stream().map(Genre::getId).collect(Collectors.toSet());
+            if (!newIds.equals(oldIds)) {
+                genreStorage.removeAllFilmGenres(film.getId());
+                for (long id : newIds) {
+                    genreStorage.getById(id);
+                    genreStorage.addFilmGenre(updatedFilm.getId(), id);
+                }
+            }
+        }
+
+        return getFilm(updatedFilm.getId());
     }
 
     public Collection<Film> getFilms() {
@@ -121,12 +146,10 @@ public class FilmService {
     }
 
     public Collection<Film> getDirectorsFilm(Long directorId, DirectorFilmSortValues sortBy) {
-        List<Film> films = filmStorage.getDirectorFilms(directorId, sortBy);
-
-        films.forEach(film -> {
-            film.setDirectors(filmDirectorStorage.getDirectors(film.getId()));
-        });
-
+        Collection<Film> films = filmStorage.getDirectorFilms(directorId, sortBy);
+        if (films.isEmpty()) {
+            throw new NotFoundException("no films");
+        }
         return films;
     }
 
@@ -145,10 +168,9 @@ public class FilmService {
             throw new NotFoundException("no user/friend");
         }
 
-        Collection<FilmLike> filmLikes = filmLikeStorage.getUsersWithSameFilmLikes(userId);
+        Collection<FilmLike> filmLikes = filmLikeStorage.getSameFilmLikes(userId, friendId);
 
         Set<Long> commonFilmIdSet = filmLikes.stream()
-                .filter(filmLike -> filmLike.getUserId() == friendId)
                 .map(FilmLike::getFilmId)
                 .collect(Collectors.toSet());
 

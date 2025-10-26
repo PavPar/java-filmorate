@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserService {
@@ -41,6 +42,9 @@ public class UserService {
     }
 
     public User addUser(@Valid User user) {
+        if (Objects.isNull(user.getName()) || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
         return storage.addUser(user);
     }
 
@@ -49,6 +53,7 @@ public class UserService {
     }
 
     public Collection<UserFeed> getUserFeed(long id) {
+        getUserById(id);
         return storage.getUserFeed(id);
     }
 

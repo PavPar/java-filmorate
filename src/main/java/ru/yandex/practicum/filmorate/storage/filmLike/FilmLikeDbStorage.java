@@ -37,4 +37,9 @@ public class FilmLikeDbStorage implements FilmLikeStorage {
     public Collection<FilmLike> getUsersWithSameFilmLikes(long userId) {
         return repository.getUsersWithSameFilmLikes(userId);
     }
+
+    @Override
+    public Collection<FilmLike> getSameFilmLikes(long userId, long friendId) {
+        return repository.getSameFilmLikes(userId, friendId);
+    }
 }

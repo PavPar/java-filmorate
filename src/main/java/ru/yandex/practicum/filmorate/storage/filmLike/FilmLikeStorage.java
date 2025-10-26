@@ -14,4 +14,6 @@ public interface FilmLikeStorage {
     Set<Long> getFilmLikes(long filmId);
 
     Collection<FilmLike> getUsersWithSameFilmLikes(long userId);
+
+    Collection<FilmLike> getSameFilmLikes(long userId, long friendId);
 }

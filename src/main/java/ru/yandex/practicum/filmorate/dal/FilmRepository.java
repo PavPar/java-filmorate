@@ -15,7 +15,17 @@ import java.util.Optional;
 
 @Repository
 public class FilmRepository extends BaseRepository<Film> {
-    private static final String GET_ALL_FILMS_QUERY = "SELECT * FROM PUBLIC.\"film\"";
+    //    private static final String GET_ALL_FILMS_QUERY = "SELECT * FROM PUBLIC.\"film\"";
+    private static final String GET_ALL_FILMS_QUERY =
+            "SELECT f.id AS film_id, f.name, f.description, f.release_date AS releaseDate, f.duration, f.mpa_id, m.name AS mpa_name, " +
+                    "g.id AS genre_id, g.name AS genre_name, " +
+                    "d.id AS director_id, d.name AS director_name " +
+                    "FROM PUBLIC.\"film\" f " +
+                    "LEFT JOIN PUBLIC.\"mpa\" m ON f.mpa_id = m.id " +
+                    "LEFT JOIN PUBLIC.\"film_genre\" fg ON f.id = fg.film_id " +
+                    "LEFT JOIN PUBLIC.\"genre\" g ON fg.genre_id = g.id " +
+                    "LEFT JOIN PUBLIC.\"film_director\" fd ON f.id = fd.film_id " +
+                    "LEFT JOIN PUBLIC.\"director\" d ON fd.director_id = d.id";
     private static final String GET_ONE_FILM_QUERY = "SELECT * FROM PUBLIC.\"film\" WHERE id = ?";
     private static final String ADD_FILM_QUERY = "INSERT INTO PUBLIC.\"film\"\n" +
             "(NAME, DESCRIPTION, RELEASE_DATE, DURATION, MPA_ID)\n" +
@@ -32,11 +42,13 @@ public class FilmRepository extends BaseRepository<Film> {
             "films.mpa_id, \n" +
             "films.mpa_name, \n" +
             "films.genre_id, \n" +
-            "films.genre_name \n" +
+            "films.genre_name,\n" +
+            "films.DIRECTOR_ID ,\n" +
+            "films.DIRECTOR_NAME \n" +
             "FROM (\n" +
             "SELECT f.id,f.name,f.description,f.RELEASE_DATE AS releaseDate,f.DURATION ,f.MPA_ID,\n" +
-            "m.name AS mpa_name, g.id AS genre_id, g.name AS genre_name\n" +
-            "FROM PUBLIC.\"film\" f LEFT JOIN (\n" +
+            "m.name AS mpa_name, g.id AS genre_id, g.name AS genre_name,d.id AS director_id, d.NAME AS director_name\n" +
+            ", lcnt.USER_LIKE_CNT  AS USER_LIKE_CNT FROM PUBLIC.\"film\" f LEFT JOIN (\n" +
             "SELECT film_id,count(user_id) AS user_like_cnt\n" +
             "FROM PUBLIC.\"user_film_like\"\n" +
             "GROUP BY film_id\n" +
@@ -44,27 +56,46 @@ public class FilmRepository extends BaseRepository<Film> {
             "LEFT JOIN PUBLIC.\"film_genre\" AS fg ON fg.film_id=f.id \n" +
             "LEFT JOIN PUBLIC.\"mpa\" AS m ON f.mpa_id = m.id \n" +
             "LEFT JOIN PUBLIC.\"genre\" AS g ON fg.genre_id = g.id \n" +
-            "WHERE (EXTRACT(YEAR FROM release_date) = ? OR ?)  AND (fg.genre_id = ?  OR ?) \n" +
+            "LEFT JOIN PUBLIC.\"film_director\" AS fd ON f.id = fd.FILM_ID \n" +
+            "LEFT JOIN PUBLIC.\"director\" AS d ON fd.DIRECTOR_ID  = d.ID \n" +
             "ORDER BY lcnt.USER_LIKE_CNT  DESC\n" +
-            ") films \n";
+            ") films \n" +
+            "WHERE  films.id IN (\n" +
+            "SELECT f.id  \n" +
+            "FROM PUBLIC.\"film\" f \n" +
+            "LEFT JOIN PUBLIC.\"film_genre\" AS fg ON fg.film_id=f.id \n" +
+            "WHERE (EXTRACT(YEAR FROM release_date) = ? OR ?)  AND (fg.genre_id = ? OR ?) \n" +
+            ")\n";
 
-    private static final String GET_TOP_N_QUERY_LIMIT = GET_TOP_N_QUERY_BASE + " LIMIT ?\n";
+    private static final String GET_TOP_N_QUERY_LIMIT = GET_TOP_N_QUERY_BASE + " AND films.id IN (\n" +
+            "SELECT film_id FROM ( \n" +
+            "SELECT f.id AS film_id,count(ufl.user_id)AS  likes\n" +
+            "FROM PUBLIC.\"film\" f \n" +
+            "LEFT JOIN \n" +
+            "PUBLIC.\"user_film_like\" ufl ON f.id = ufl.film_id\n" +
+            "GROUP BY f.id\n" +
+            "ORDER BY likes DESC\n" +
+            ")\n" +
+            "LIMIT ?\n" +
+            ") ORDER BY USER_LIKE_CNT  DESC\n";
     private static final String DELETE_FILM_QUERY = "DELETE FROM PUBLIC.\"film\" WHERE id = ?";
-
-    private static final String BASE_FILM_DIRECTOR_QUERY = """
-            SELECT f.id AS film_id, f.name, f.description, f.release_date, f.duration,
-                   f.mpa_id, m.name AS mpa_name,
-                   COALESCE(lc.user_like_cnt, 0) AS like_count
-            FROM PUBLIC.\"film\" AS f
-            INNER JOIN PUBLIC.\"mpa\" AS m ON f.mpa_id = m.id
-            INNER JOIN PUBLIC.\"film_director\" AS fd ON f.id = fd.film_id
-            LEFT JOIN (
-                SELECT film_id,count(user_id) AS user_like_cnt
-                FROM PUBLIC.\"user_film_like\"
-                GROUP BY film_id
-            ) AS lc ON f.id = lc.film_id
-            WHERE fd.director_id = ?
-            """;
+    private static final String BASE_FILM_DIRECTOR_QUERY =
+            "SELECT f.id AS film_id, f.name, f.description, f.release_date AS releaseDate, f.duration, f.mpa_id, m.name AS mpa_name, " +
+                    "g.id AS genre_id, g.name AS genre_name, " +
+                    "d.id AS director_id, d.name AS director_name," +
+                    "COALESCE(lc.user_like_cnt, 0) AS like_count " +
+                    "FROM PUBLIC.\"film\" f " +
+                    "LEFT JOIN PUBLIC.\"mpa\" m ON f.mpa_id = m.id " +
+                    "LEFT JOIN PUBLIC.\"film_genre\" fg ON f.id = fg.film_id " +
+                    "LEFT JOIN PUBLIC.\"genre\" g ON fg.genre_id = g.id " +
+                    "LEFT JOIN PUBLIC.\"film_director\" fd ON f.id = fd.film_id " +
+                    "LEFT JOIN PUBLIC.\"director\" d ON fd.director_id = d.id" +
+                    " LEFT JOIN (\n" +
+                    "                SELECT film_id,count(user_id) AS user_like_cnt\n" +
+                    "                FROM PUBLIC.\"user_film_like\"\n" +
+                    "                GROUP BY film_id\n" +
+                    "            ) AS lc ON f.id = lc.film_id" +
+                    " WHERE fd.director_id = ?";
 
     private static final String ORDER_BY_YEAR = " ORDER BY f.release_date ASC";
     private static final String ORDER_BY_LIKES = " ORDER BY like_count DESC";
@@ -141,7 +172,7 @@ public class FilmRepository extends BaseRepository<Film> {
     }
 
     public List<Film> getAll() {
-        return findMany(GET_ALL_FILMS_QUERY);
+        return this.findManyExtract(GET_ALL_FILMS_QUERY, new FilmWithItemsExtractor());
     }
 
     public Optional<Film> getFilm(long id) {
@@ -193,8 +224,8 @@ public class FilmRepository extends BaseRepository<Film> {
         }
 
         String placeholders = String.join(",", ids.stream().map(id -> "?").toList());
-        String sql = "SELECT * FROM PUBLIC.\"film\" WHERE id IN (" + placeholders + ")";
-        return findMany(sql, ids.toArray());
+        String sql = GET_ALL_FILMS_QUERY + " WHERE f.id IN (" + placeholders + ")";
+        return this.findManyExtract(sql, new FilmWithItemsExtractor(), ids.toArray());
     }
 
     public List<Film> getFilmsByIdsOrderedByPopularity(Collection<Long> ids) {
@@ -204,7 +235,6 @@ public class FilmRepository extends BaseRepository<Film> {
 
         String placeholders = String.join(",", ids.stream().map(id -> "?").toList());
         String sql = GET_FILMS_BY_ID_ORDERED_BY_POPULARITY.replace("?", placeholders);
-//        return findMany(sql, ids.toArray());
         return this.findManyExtract(sql, new FilmWithItemsExtractor(), ids.toArray());
     }
 
@@ -215,7 +245,7 @@ public class FilmRepository extends BaseRepository<Film> {
         } else if (sortBy == DirectorFilmSortValues.likes) {
             query += ORDER_BY_LIKES;
         }
-        return this.findMany(query, directorId);
+        return this.findManyExtract(query, new FilmWithItemsExtractor(), directorId);
     }
 
     public List<Film> searchFilmsByDirectorOrTitleViaSubstring(String querySubstring, List<String> by) {
